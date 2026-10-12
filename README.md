@@ -76,7 +76,7 @@ The command prompts for a username and password and stores only a scrypt hash. T
 - `/admin` — sign in.
 - `/admin/dashboard` — actual content counts and recent admin audit entries.
 - `/admin/settings` — brand, page copy, international WhatsApp numbers, manual status note, links, SEO and image URLs.
-- `/admin/features`, `/admin/commands`, `/admin/faqs`, `/admin/contacts` — searchable create/read/update/delete, order and visibility.
+- `/admin/commands`, `/admin/faqs`, `/admin/contacts` — searchable create/read/update/delete, order and visibility. Commands can be grouped by editable categories.
 - `/admin/appearance` — color settings, default theme and a live preview.
 - `/admin/profile` — change username and password after verifying the current password.
 

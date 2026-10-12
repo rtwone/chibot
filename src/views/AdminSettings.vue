@@ -14,7 +14,6 @@ const sections = [
   ] },
   { title: "Navigasi", fields: [
     ["nav_home_label", "Label menu beranda", true], ["nav_home_url", "Tautan menu beranda", true],
-    ["nav_features_label", "Label menu fitur", true], ["nav_features_url", "Tautan menu fitur", true],
     ["nav_commands_label", "Label menu perintah", true], ["nav_commands_url", "Tautan menu perintah", true],
     ["nav_contact_label", "Label menu kontak", true], ["nav_contact_url", "Tautan menu kontak", true],
   ] },

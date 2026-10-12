@@ -1,5 +1,6 @@
 node_modules/
 dist/
+/public/assets/
 .env
 data/
 npm-debug.log*

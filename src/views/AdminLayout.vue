@@ -10,7 +10,6 @@ const busy = ref(false);
 const links = [
   ["dashboard", "⌂", "Ringkasan", "/admin/dashboard"],
   ["settings", "⚙", "Pengaturan situs", "/admin/settings"],
-  ["features", "✳", "Fitur", "/admin/features"],
   ["commands", "⌘", "Perintah", "/admin/commands"],
   ["faqs", "?", "FAQ", "/admin/faqs"],
   ["contacts", "↗", "Kontak", "/admin/contacts"],

@@ -4,10 +4,10 @@ import { api } from "../api.js";
 
 const props = defineProps({ table: { type: String, required: true } });
 const config = {
-  features: { title: "Fitur", noun: "fitur", columns: [["title", "Judul"], ["description", "Deskripsi"], ["sort_order", "Urutan"], ["is_visible", "Tampil"]], fields: [["title", "Judul", true], ["description", "Deskripsi", true, true], ["icon", "Ikon", true]] },
-  commands: { title: "Perintah", noun: "perintah", columns: [["command", "Perintah"], ["category", "Kategori"], ["sort_order", "Urutan"], ["is_visible", "Tampil"]], fields: [["command", "Perintah", true], ["description", "Deskripsi", true, true], ["category", "Kategori", true], ["usage_example", "Contoh penggunaan", false]] },
-  faqs: { title: "FAQ", noun: "FAQ", columns: [["question", "Pertanyaan"], ["answer", "Jawaban"], ["sort_order", "Urutan"], ["is_visible", "Tampil"]], fields: [["question", "Pertanyaan", true], ["answer", "Jawaban", true, true]] },
-  contacts: { title: "Kontak", noun: "kontak", columns: [["label", "Label"], ["type", "Jenis"], ["value", "Nilai"], ["sort_order", "Urutan"], ["is_visible", "Tampil"]], fields: [["label", "Label", true], ["type", "Jenis kontak", true], ["value", "Nilai tampilan", true], ["url", "URL HTTPS", false]] },
+  features: { title: "Fitur", noun: "fitur", columns: [["title", "Judul"], ["description", "Deskripsi"], ["is_visible", "Tampil"]], fields: [["title", "Judul", true], ["description", "Deskripsi", true, true], ["icon", "Ikon", true]] },
+  commands: { title: "Perintah", noun: "perintah", columns: [["command", "Perintah"], ["category", "Kategori"], ["is_visible", "Tampil"]], fields: [["command", "Perintah", true], ["description", "Deskripsi", true, true], ["category", "Kategori", true], ["usage_example", "Contoh penggunaan", false]] },
+  faqs: { title: "FAQ", noun: "FAQ", columns: [["question", "Pertanyaan"], ["answer", "Jawaban"], ["is_visible", "Tampil"]], fields: [["question", "Pertanyaan", true], ["answer", "Jawaban", true, true]] },
+  contacts: { title: "Kontak", noun: "kontak", columns: [["label", "Label"], ["type", "Jenis"], ["value", "Nilai"], ["is_visible", "Tampil"]], fields: [["label", "Label", true], ["type", "Jenis kontak", true], ["value", "Nilai tampilan", true], ["url", "URL HTTPS", false]] },
 };
 const itemConfig = computed(() => config[props.table]);
 const items = ref([]);
@@ -23,7 +23,6 @@ let searchTimer;
 const blankForm = () => {
   Object.keys(form).forEach((key) => delete form[key]);
   for (const [key] of itemConfig.value.fields) form[key] = "";
-  form.sort_order = 0;
   form.is_visible = true;
 };
 
@@ -105,7 +104,6 @@ onMounted(loadItems);
             <textarea v-if="multiline" v-model="form[key]" rows="4" maxlength="1000" :required="required"></textarea>
             <input v-else v-model="form[key]" :required="required" :maxlength="key === 'icon' ? 12 : 500">
           </label>
-          <label class="form-field"><span>Urutan tampil</span><input v-model.number="form.sort_order" type="number" min="0" max="9999"></label>
           <label class="check-field"><input v-model="form.is_visible" type="checkbox"><span>Tampilkan di situs</span></label>
         </div>
         <div class="admin-form-actions"><button class="button button-dark" type="submit" :disabled="saving">{{ saving ? "Menyimpan..." : "Simpan" }}</button><button class="button button-outline" type="button" @click="editorOpen = false">Batal</button></div>
@@ -120,9 +118,10 @@ onMounted(loadItems);
       <p v-if="loading" class="loading-state">Memuat konten...</p>
       <div v-else-if="items.length" class="table-scroll">
         <table>
-          <thead><tr><th v-for="[key, label] in itemConfig.columns" :key="key">{{ label }}</th><th>Aksi</th></tr></thead>
+          <thead><tr><th>No.</th><th v-for="[key, label] in itemConfig.columns" :key="key">{{ label }}</th><th>Aksi</th></tr></thead>
           <tbody>
-            <tr v-for="item in items" :key="item.id">
+            <tr v-for="(item, index) in items" :key="item.id">
+              <td class="row-order">{{ index + 1 }}</td>
               <td v-for="[key] in itemConfig.columns" :key="key">
                 <span v-if="key === 'is_visible'" class="visibility-tag" :class="{ visible: item[key] }">{{ item[key] ? "Tampil" : "Tersembunyi" }}</span>
                 <template v-else>{{ String(item[key] ?? "").slice(0, 140) }}</template>

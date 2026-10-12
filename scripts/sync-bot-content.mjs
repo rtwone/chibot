@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import { botSiteCommands, botSiteFaqs, botSiteFeatures, botSiteSettings } from "../lib/bot-site-content.mjs";
+import { botSiteCommands, botSiteFaqs, botSiteSettings } from "../lib/bot-site-content.mjs";
 
 const url = process.env.SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -26,16 +26,14 @@ const legacySettings = {
   seo_description: "Kenali bot WhatsApp, jelajahi perintah yang tersedia, dan temukan informasi penggunaannya.",
 };
 
-const legacyFeatures = [
-  ["feature-1", "Perintah Pintar", "Kumpulan perintah praktis yang terus bertambah dan dicatat saat tersedia.", "⌘"],
-  ["feature-2", "Asisten AI", "Fitur asisten yang dapat digunakan jika sudah diaktifkan dan dikonfigurasi.", "✳"],
-  ["feature-3", "Alat Gambar & Media", "Beragam alat media sesuai fitur yang didukung bot.", "▧"],
-  ["feature-4", "Pengunduh Media", "Unduh media jika didukung dan diizinkan oleh sumbernya.", "↧"],
-  ["feature-5", "Fitur Grup", "Alat untuk percakapan grup dengan izin yang diperlukan.", "♧"],
-  ["feature-6", "Pembuat Stiker", "Ubah media yang didukung menjadi stiker jika fitur tersedia.", "▣"],
-  ["feature-7", "Otomatisasi", "Kurangi pekerjaan berulang dengan otomatisasi yang didukung bot.", "⚙"],
-  ["feature-8", "Respons Cepat", "Cara praktis untuk melihat ketersediaan bot dan daftar perintah.", "↯"],
-].map(([id, title, description, icon]) => ({ id, title, description, icon }));
+const previousBotSettings = {
+  brand_name: "Chitanda Eru Bot",
+  hero_title: "Kenalan dengan Chitanda Eru Bot.",
+  hero_description: "Asisten WhatsApp dengan chatbot AI, pencarian dan pemutar YouTube, alat stiker, menfess, serta utilitas grup. Ketersediaan beberapa fitur mengikuti konfigurasi bot.",
+  site_description: "Chitanda Eru Bot adalah bot WhatsApp berbasis Baileys dengan chatbot AI, alat YouTube dan stiker, menfess, serta utilitas grup dan pengingat untuk grup yang dikonfigurasi.",
+  seo_title: "Chitanda Eru Bot — Asisten WhatsApp",
+  seo_description: "Jelajahi kemampuan Chitanda Eru Bot: chatbot AI, pencarian dan pemutar YouTube, alat stiker, menfess, serta utilitas WhatsApp.",
+};
 
 const legacyCommands = [
   ["command-1", ".menu", "Tampilkan daftar perintah yang tersedia.", "Umum", ".menu"],
@@ -61,9 +59,11 @@ async function syncSettings() {
     "site settings read",
   ) || [];
   let updated = 0;
-  for (const [key, previousValue] of Object.entries(legacySettings)) {
+  for (const key of new Set([...Object.keys(legacySettings), ...Object.keys(previousBotSettings)])) {
     const row = rows.find((item) => item.key === key);
-    if (!row || row.value !== previousValue) continue;
+    const previousValues = [legacySettings[key], previousBotSettings[key]].filter(Boolean);
+    if (!row || !previousValues.includes(row.value)) continue;
+    const previousValue = row.value;
     dataOrThrow(
       await client.from("site_settings").update({ value: botSiteSettings[key] }).eq("key", key).eq("value", previousValue),
       `site setting update (${key})`,
@@ -106,14 +106,6 @@ async function syncTable(table, columns, legacyRows, currentRows, comparableFiel
 }
 
 const settingsUpdated = await syncSettings();
-const features = await syncTable(
-  "features",
-  "id,title,description,icon",
-  legacyFeatures,
-  botSiteFeatures,
-  ["title", "description", "icon"],
-  ["title", "description", "icon", "sort_order"],
-);
 const commands = await syncTable(
   "commands",
   "id,command,description,category,usage_example",
@@ -131,4 +123,4 @@ const faqs = await syncTable(
   ["question", "answer", "sort_order"],
 );
 
-console.log(`Konten bot tersinkronisasi: ${settingsUpdated} pengaturan, ${features.updated} fitur diperbarui/${features.inserted} ditambahkan, ${commands.updated} perintah diperbarui/${commands.inserted} ditambahkan, ${faqs.updated} FAQ diperbarui/${faqs.inserted} ditambahkan.`);
+console.log(`Konten bot tersinkronisasi: ${settingsUpdated} pengaturan, ${commands.updated} perintah diperbarui/${commands.inserted} ditambahkan, ${faqs.updated} FAQ diperbarui/${faqs.inserted} ditambahkan.`);

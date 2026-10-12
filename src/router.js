@@ -22,7 +22,7 @@ const router = createRouter({
       children: [
         { path: "dashboard", component: AdminDashboard },
         { path: "settings", component: AdminSettings },
-        { path: "features", component: AdminResources, props: { table: "features" } },
+        { path: "features", redirect: "/admin/commands" },
         { path: "commands", component: AdminResources, props: { table: "commands" } },
         { path: "faqs", component: AdminResources, props: { table: "faqs" } },
         { path: "contacts", component: AdminResources, props: { table: "contacts" } },

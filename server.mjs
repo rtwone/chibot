@@ -159,14 +159,13 @@ const audit = async (adminId, action) => {
 };
 
 app.get("/api/site", async (req, res) => {
-  const [settings, features, commands, faqs, contacts] = await Promise.all([
+  const [settings, commands, faqs, contacts] = await Promise.all([
     store.settings(),
-    store.visibleRows("features"),
     store.visibleRows("commands"),
     store.visibleRows("faqs"),
     store.contactRows(),
   ]);
-  res.json({ settings, features, commands, faqs, contacts });
+  res.json({ settings, commands, faqs, contacts });
 });
 
 app.get("/nomor", async (req, res) => {
@@ -266,7 +265,7 @@ const settingFields = [
   { key: "copyright", label: "Nama hak cipta", max: 120 },
   { key: "default_theme", label: "Tema default", options: ["light", "dark"] },
   ...[
-    ["home", "Beranda", "#home"], ["features", "Fitur", "#features"], ["commands", "Perintah", "#commands"],
+    ["home", "Beranda", "#home"], ["commands", "Perintah", "#commands"],
     ["documentation", "Dokumentasi", ""], ["contact", "Kontak", "#contact"],
   ].flatMap(([key, label, defaultUrl]) => [
     { key: `nav_${key}_label`, label: `Label menu ${label}`, required: true, max: 30 },
@@ -359,9 +358,6 @@ const validateResource = (table, body, creating = false) => {
     }
     values[key] = value;
   }
-  const order = Number(body.sort_order || 0);
-  if (!Number.isInteger(order) || order < 0 || order > 9999) throw fail(400, "Urutan harus berupa bilangan bulat 0–9999.");
-  values.sort_order = order;
   values.is_visible = creating ? body.is_visible !== false : body.is_visible === true;
   return values;
 };

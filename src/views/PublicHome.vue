@@ -16,11 +16,13 @@ const settings = computed(() => siteData.value?.settings || {});
 const botDigits = computed(() => String(settings.value.bot_number || "").replace(/\D/g, ""));
 const supportDigits = computed(() => String(settings.value.support_number || "").replace(/\D/g, ""));
 const commands = computed(() => siteData.value?.commands || []);
-const features = computed(() => siteData.value?.features || []);
 const faqs = computed(() => siteData.value?.faqs || []);
 const contacts = computed(() => siteData.value?.contacts || []);
-const categories = computed(() => [...new Set(commands.value.map((item) => item.category))]);
-const filteredCommands = computed(() => commands.value.filter((item) => {
+const categories = computed(() => [...new Set(commands.value.map((item) => item.category))].sort((a, b) => a.localeCompare(b, "id")));
+const categorizedCommands = computed(() => [...commands.value].sort((a, b) =>
+  a.category.localeCompare(b.category, "id") || a.sort_order - b.sort_order || a.command.localeCompare(b.command, "id"),
+));
+const filteredCommands = computed(() => categorizedCommands.value.filter((item) => {
   const query = search.value.trim().toLocaleLowerCase();
   const matchesText = !query || `${item.command} ${item.description} ${item.category}`.toLocaleLowerCase().includes(query);
   return matchesText && (!category.value || item.category === category.value);
@@ -29,6 +31,14 @@ const commandPageCount = computed(() => Math.ceil(filteredCommands.value.length 
 const paginatedCommands = computed(() => {
   const start = (commandPage.value - 1) * 10;
   return filteredCommands.value.slice(start, start + 10);
+});
+const groupedCommands = computed(() => {
+  const groups = new Map();
+  for (const command of paginatedCommands.value) {
+    if (!groups.has(command.category)) groups.set(command.category, []);
+    groups.get(command.category).push(command);
+  }
+  return [...groups].map(([name, items]) => ({ name, items }));
 });
 watch([search, category], () => { commandPage.value = 1; });
 const year = new Date().getFullYear();
@@ -108,7 +118,6 @@ onMounted(async () => {
       </button>
       <nav id="site-nav" class="site-nav" :class="{ 'is-open': menuOpen }" aria-label="Navigasi utama">
         <a :href="navigationLink('home', '#home')" @click="menuOpen = false">{{ settings.nav_home_label }}</a>
-        <a :href="navigationLink('features', '#features')" @click="menuOpen = false">{{ settings.nav_features_label }}</a>
         <a :href="navigationLink('commands', '#commands')" @click="menuOpen = false">{{ settings.nav_commands_label }}</a>
         <a :href="navigationLink('contact', '#contact')" @click="menuOpen = false">{{ settings.nav_contact_label }}</a>
       </nav>
@@ -127,9 +136,9 @@ onMounted(async () => {
           <div class="hero-actions">
             <a v-if="botDigits.length >= 8" class="button button-primary button-large" :href="`https://wa.me/${botDigits}`">Chat dengan bot <span aria-hidden="true">↗</span></a>
             <a v-else class="button button-primary button-large" href="#bot-number">Nomor bot segera hadir <span aria-hidden="true">↘</span></a>
-            <a class="button button-secondary button-large" href="#features">Jelajahi fitur <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary button-large" href="#commands">Jelajahi perintah <span aria-hidden="true">↓</span></a>
           </div>
-          <p class="hero-proof"><span class="proof-avatars" aria-hidden="true"><b>✳</b><b>⌘</b><b>↗</b></span> AI percakapan, alat YouTube, stiker, dan fitur komunitas.</p>
+          <p class="hero-proof"><span class="proof-avatars" aria-hidden="true"><b>✳</b><b>⌘</b><b>↗</b></span> AI percakapan, media TikTok &amp; YouTube, stiker, dan fitur komunitas.</p>
         </div>
         <div class="hero-art" aria-label="Ilustrasi percakapan dengan bot WhatsApp">
           <span class="decor-star star-one">✳</span><span class="decor-star star-two">✦</span><span class="decor-circle"></span>
@@ -162,21 +171,13 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section id="features" class="section-wrap section-block">
-        <div class="section-heading"><div><span class="section-kicker">KEMAMPUAN CHITANDA ERU BOT</span><h2>Teman chat yang<br><span class="heading-highlight">serba bisa.</span></h2></div><p>Kenali fitur yang tersedia di script bot. AI, utilitas grup, dan pengingat tetap mengikuti konfigurasi serta izin WhatsApp.</p></div>
-        <div class="feature-grid">
-          <article v-for="(feature, index) in features" :key="feature.id" class="feature-card" :class="`feature-tone-${index % 4}`"><span class="feature-icon" aria-hidden="true">{{ feature.icon }}</span><span class="feature-index">{{ String(index + 1).padStart(2, "0") }}</span><h3>{{ feature.title }}</h3><p>{{ feature.description }}</p><span class="feature-arrow" aria-hidden="true">↗</span></article>
-          <p v-if="!features.length" class="empty-note">Fitur sedang disiapkan. Silakan kembali lagi nanti.</p>
-        </div>
-      </section>
-
       <section id="commands" class="commands-section">
         <div class="section-wrap section-block">
-          <div class="section-heading"><div><span class="section-kicker">PERINTAH DARI SCRIPT BOT</span><h2>Ketik perintahnya.</h2></div><p>Gunakan prefix yang ditampilkan bot. Beberapa perintah hanya berlaku di grup tertentu atau memerlukan izin admin grup.</p></div>
+          <div class="section-heading"><div><span class="section-kicker">KEMAMPUAN & PERINTAH BOT</span><h2>Semua perintah,<br><span class="heading-highlight">berdasarkan kategori.</span></h2></div><p>Gunakan prefix yang ditampilkan bot. Perintah grup memerlukan izin yang sesuai; fitur AI, media, dan verifikasi akun bergantung pada layanan terkait.</p></div>
           <div class="command-panel">
             <div class="terminal-top"><div class="terminal-dots"><i></i><i></i><i></i></div><span>DAFTAR PERINTAH</span><span class="terminal-count">{{ commands.length }} perintah</span></div>
             <div class="command-tools"><label class="search-box"><span aria-hidden="true">⌕</span><input v-model="search" type="search" placeholder="Cari perintah..." aria-label="Cari perintah"></label><label class="visually-hidden" for="command-category">Filter berdasarkan kategori</label><select id="command-category" v-model="category"><option value="">Semua kategori</option><option v-for="value in categories" :key="value" :value="value">{{ value }}</option></select></div>
-            <div class="command-list"><article v-for="command in paginatedCommands" :key="command.id" class="command-row"><div class="command-title"><code>{{ command.command }}</code><span class="category-pill">{{ command.category }}</span></div><p>{{ command.description }}</p><div class="command-example"><code>{{ command.usage_example || command.command }}</code><button class="copy-command" type="button" :aria-label="`Salin perintah ${command.command}`" @click="copyText(command.command)">Salin</button></div></article><p v-if="!filteredCommands.length" class="empty-note">Tidak ada perintah yang cocok dengan pencarianmu.</p><nav v-if="commandPageCount > 1" class="command-pagination" aria-label="Navigasi halaman perintah"><span class="command-page-status">Halaman {{ commandPage }} dari {{ commandPageCount }}</span><div><button class="command-page-button" type="button" :disabled="commandPage === 1" @click="commandPage -= 1">Sebelumnya</button><button class="command-page-button" type="button" :disabled="commandPage === commandPageCount" @click="commandPage += 1">Berikutnya</button></div></nav></div>
+            <div class="command-list"><section v-for="group in groupedCommands" :key="group.name" class="command-category-group"><h3 class="command-category-heading"><span>{{ group.name }}</span><span>{{ group.items.length }} perintah</span></h3><article v-for="command in group.items" :key="command.id" class="command-row"><div class="command-title"><code>{{ command.command }}</code></div><p>{{ command.description }}</p><div class="command-example"><code>{{ command.usage_example || command.command }}</code><button class="copy-command" type="button" :aria-label="`Salin perintah ${command.command}`" @click="copyText(command.command)">Salin</button></div></article></section><p v-if="!filteredCommands.length" class="empty-note">Tidak ada perintah yang cocok dengan pencarianmu.</p><nav v-if="commandPageCount > 1" class="command-pagination" aria-label="Navigasi halaman perintah"><span class="command-page-status">Halaman {{ commandPage }} dari {{ commandPageCount }}</span><div><button class="command-page-button" type="button" :disabled="commandPage === 1" @click="commandPage -= 1">Sebelumnya</button><button class="command-page-button" type="button" :disabled="commandPage === commandPageCount" @click="commandPage += 1">Berikutnya</button></div></nav></div>
           </div>
         </div>
       </section>
@@ -186,7 +187,7 @@ onMounted(async () => {
         <div class="steps-grid"><article v-for="step in [{number:'01',title:'Buka WhatsApp',description:'Mulai chat melalui nomor bot yang telah diatur pada halaman ini.',icon:'◌'},{number:'02',title:'Kirim pesan atau mention',description:'Chat pribadi untuk ngobrol dengan AI, atau mention bot di grup.',icon:'✉'},{number:'03',title:'Coba .menu',description:'Lihat perintah media, komunitas, grup, dan produktivitas yang tersedia.',icon:'⌘'}]" :key="step.number" class="step-card"><span class="step-number">{{ step.number }}</span><span class="step-icon" aria-hidden="true">{{ step.icon }}</span><h3>{{ step.title }}</h3><p>{{ step.description }}</p></article></div>
       </section>
 
-      <section class="stats-strip"><div class="section-wrap stats-inner"><div><span class="section-kicker">DIBUAT UNTUK CHAT YANG PRAKTIS</span><h2>Yang kamu butuhkan.<br>Tanpa yang berlebihan.</h2></div><div class="stats-item"><strong>{{ commands.length }}</strong><span>perintah tercatat</span></div><div class="stats-item"><strong>{{ features.length }}</strong><span>fitur tercatat</span></div><p class="stats-disclaimer">Jumlah ini hanya menghitung konten yang tampil, bukan penggunaan atau waktu aktif bot.</p></div></section>
+      <section class="stats-strip"><div class="section-wrap stats-inner"><div><span class="section-kicker">DIBUAT UNTUK CHAT YANG PRAKTIS</span><h2>Yang kamu butuhkan.<br>Tanpa yang berlebihan.</h2></div><div class="stats-item"><strong>{{ commands.length }}</strong><span>perintah tersedia</span></div><div class="stats-item"><strong>{{ categories.length }}</strong><span>kategori perintah</span></div><p class="stats-disclaimer">Jumlah ini menghitung konten yang tampil, bukan penggunaan atau waktu aktif bot.</p></div></section>
 
       <section id="faq" class="section-wrap section-block faq-section">
         <div class="section-heading"><div><span class="section-kicker">INFO YANG PERLU DIKETAHUI</span><h2>Ada pertanyaan?<br>Kami siap membantu.</h2></div><p>Butuh bantuan lebih lanjut? Hubungi kontak dukungan di bawah ini.</p></div>

@@ -26,15 +26,14 @@ const formatDate = (value) => new Date(value).toLocaleString("id-ID");
     <p v-else-if="loading" class="loading-state">Memuat data...</p>
     <template v-else>
       <div class="metric-grid">
-        <RouterLink v-for="(label, table) in { features: 'Fitur', commands: 'Perintah', faqs: 'FAQ', contacts: 'Kontak' }" :key="table" class="metric-card" :to="`/admin/${table}`"><span>{{ label }}</span><strong>{{ summary.counts[table] }}</strong><small>jumlah entri <span aria-hidden="true">↗</span></small></RouterLink>
+        <RouterLink v-for="(label, table) in { commands: 'Perintah', faqs: 'FAQ', contacts: 'Kontak' }" :key="table" class="metric-card" :to="`/admin/${table}`"><span>{{ label }}</span><strong>{{ summary.counts[table] }}</strong><small>jumlah entri <span aria-hidden="true">↗</span></small></RouterLink>
       </div>
       <div class="admin-dashboard-grid">
         <section class="admin-card">
           <div class="admin-card-heading"><div><span class="section-kicker">AKSES CEPAT</span><h2>Mulai dari sini.</h2></div></div>
           <div class="quick-actions">
             <RouterLink to="/admin/settings"><span>⚙</span><strong>Ubah pengaturan situs</strong><small>Brand, nomor bot, tautan, dan SEO</small><b>↗</b></RouterLink>
-            <RouterLink to="/admin/features"><span>✳</span><strong>Kelola fitur</strong><small>Atur fitur yang ditampilkan</small><b>↗</b></RouterLink>
-            <RouterLink to="/admin/commands"><span>⌘</span><strong>Kelola perintah</strong><small>Perbarui daftar perintah</small><b>↗</b></RouterLink>
+            <RouterLink to="/admin/commands"><span>⌘</span><strong>Kelola perintah</strong><small>Atur perintah sekaligus kategorinya</small><b>↗</b></RouterLink>
             <RouterLink to="/admin/appearance"><span>◐</span><strong>Atur tampilan</strong><small>Warna dan tema situs</small><b>↗</b></RouterLink>
           </div>
         </section>
