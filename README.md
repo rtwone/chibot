@@ -95,7 +95,7 @@ npm start
 
 For Vercel:
 
-1. Import the repository with the project root set to this directory and select the **Express** framework preset (not Vite). Vercel detects the root `server.mjs` Express app as a Node.js Function; `public/` contains the static assets.
+1. Import the repository with the project root set to this directory and select the **Express** framework preset (not Vite). Vercel detects the root `server.mjs` Express app as a Node.js Function; `public/` contains the static assets. Leave **Output Directory** unset so Vercel can discover the Express entrypoint at the project root.
 2. Set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` in **Settings → Environment Variables** for Production (and Preview if needed). Keep the service role key server-only.
 3. Deploy and check `https://<your-domain>/api/site` for JSON, then `/admin` and `/nomor`. If changing environment variables, redeploy.
 4. Vercel Functions have ephemeral filesystems. The admin image-upload endpoint writes to local disk and therefore is not supported on Vercel; use HTTPS-hosted images for now. Persisted uploads require integrating object storage or Supabase Storage.
