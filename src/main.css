@@ -1,0 +1,26 @@
+#app { min-height: 100vh; }
+.toast-message { position: fixed; z-index: 20; right: 20px; bottom: 20px; padding: 12px 16px; border: 2px solid var(--border-color); box-shadow: var(--shadow); background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 700; }
+.toast-error { background: #ffd7d7; color: #171010; }
+.form-error { color: #a12020; }
+.admin-content .form-field input, .admin-content .form-field select, .admin-content .form-field textarea { display: block; width: 100%; }
+.resource-form .check-field { align-self: end; }
+.admin-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.admin-error { margin: 0 0 16px; padding: 12px; border: 1px solid #a12020; background: #ffd7d7; color: #3b1010; }
+.loading-state { padding: 28px; text-align: center; color: var(--muted); }
+.admin-title-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 20px; }
+.admin-title-row h1 { margin: 0; }
+.admin-inline-actions { display: flex; align-items: center; gap: 10px; }
+.profile-form { max-width: 620px; display: grid; gap: 16px; }
+.profile-form .form-field { display: grid; gap: 6px; }
+.theme-preview { margin-top: 20px; }
+.theme-preview strong { display: block; }
+.appearance-grid { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.admin-table { width: 100%; }
+.resource-editor { max-width: 760px; }
+.resource-editor .settings-grid { margin-bottom: 20px; }
+.admin-content .data-card { overflow: hidden; }
+.settings-form textarea { width: 100%; }
+@media (max-width: 650px) {
+  .admin-title-row { align-items: flex-start; flex-direction: column; }
+  .admin-inline-actions { width: 100%; }
+}

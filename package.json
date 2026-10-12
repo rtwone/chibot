@@ -1,0 +1,34 @@
+{
+  "name": "chibot-landing-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "concurrently -k \"npm:dev:api\" \"npm:dev:ui\"",
+    "dev:api": "node --watch server.mjs",
+    "dev:ui": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "admin:create": "node scripts/create-admin.mjs",
+    "db:migrate": "node scripts/migrate-to-supabase.mjs",
+    "content:sync-bot": "node scripts/sync-bot-content.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.26.0",
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.10",
+    "concurrently": "^10.0.6",
+    "vite": "^8.3.4"
+  }
+}
