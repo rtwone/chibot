@@ -15,7 +15,7 @@ const production = process.env.NODE_ENV === "production";
 const sessionCookie = production ? "__Host-chibot_session" : "chibot_session";
 const sessionLifetime = 12 * 60 * 60 * 1000;
 const staticUploads = resolve(process.env.DATA_DIR || "./data", "uploads");
-const distDirectory = resolve("dist");
+const staticDirectory = resolve("public");
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 3 * 1024 * 1024, files: 1 } });
 const loginAttempts = new Map();
 const contentTables = new Set(["features", "commands", "faqs", "contacts"]);
@@ -455,14 +455,14 @@ app.use("/uploads", express.static(staticUploads, {
   setHeaders(res) { res.set("X-Content-Type-Options", "nosniff"); },
 }));
 app.use("/api", (req, res) => res.status(404).json({ error: "Endpoint API tidak ditemukan." }));
-app.use(express.static(distDirectory, { index: false, maxAge: production ? "1d" : 0 }));
+app.use(express.static(staticDirectory, { index: false, maxAge: production ? "1d" : 0 }));
 app.get("/robots.txt", (req, res) => res.type("text/plain").send("User-agent: *\nAllow: /\nDisallow: /admin\n"));
 app.get("/sitemap.xml", (req, res) => {
   const origin = `${req.protocol}://${req.get("host")}`;
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${origin}/</loc></url></urlset>`);
 });
 app.get(/.*/, (req, res, next) => {
-  res.sendFile(resolve(distDirectory, "index.html"), (error) => {
+  res.sendFile(resolve(staticDirectory, "index.html"), (error) => {
     if (error) next(fail(404, "Frontend Vue belum dibuat. Jalankan npm run build."));
   });
 });
@@ -481,4 +481,8 @@ app.use((error, req, res, next) => {
 
 const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || "127.0.0.1";
-app.listen(port, host, () => console.log(`Chibot API listening at http://${host}:${port}`));
+if (!process.env.VERCEL) {
+  app.listen(port, host, () => console.log(`Chibot API listening at http://${host}:${port}`));
+}
+
+export default app;
