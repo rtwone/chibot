@@ -137,6 +137,7 @@ onMounted(async () => {
             <a v-if="botDigits.length >= 8" class="button button-primary button-large" :href="`https://wa.me/${botDigits}`">Chat dengan bot <span aria-hidden="true">↗</span></a>
             <a v-else class="button button-primary button-large" href="#bot-number">Nomor bot segera hadir <span aria-hidden="true">↘</span></a>
             <a class="button button-secondary button-large" href="#commands">Jelajahi perintah <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary button-large" href="https://chat.whatsapp.com/FeIm2BuLmLxIUFWCMII9YL" target="_blank" rel="noopener noreferrer">Join Grup WhatsApp <span aria-hidden="true">↗</span></a>
           </div>
           <p class="hero-proof"><span class="proof-avatars" aria-hidden="true"><b>✳</b><b>⌘</b><b>↗</b></span> AI percakapan, media TikTok &amp; YouTube, stiker, dan fitur komunitas.</p>
         </div>
