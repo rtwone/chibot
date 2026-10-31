@@ -29,7 +29,7 @@ The first administrator is created interactively; there is no default account or
 
 ## Sync website content with the bot script
 
-The verified Chitanda Eru Bot starter profile, feature descriptions, commands, and FAQs are in `lib/bot-site-content.mjs`. They are based on the bot's configured identity, `events/message.js`, AI message handling, and the reminder/menfess modules. Owner-only commands and sample statistics are not advertised; group permissions, AI configuration, and the configured reminder-group restriction are called out in the copy.
+The verified Chitanda Eru Bot starter profile, feature descriptions, commands, and FAQs are in `lib/bot-site-content.mjs`. They are based on the bot's configured identity, `events/message.js`, AI message handling, and the reminder/menfess modules. Owner-only commands and fabricated statistics are not advertised; group permissions, AI configuration, and the configured reminder-group restriction are called out in the copy.
 
 After changing the website starter content, sync it to the existing Supabase project from the website project directory:
 
